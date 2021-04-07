@@ -27,14 +27,20 @@ describe Oystercard do
   end
 
   it  '#in_journey should be true after touch_in' do
+    subject.top_up(Oystercard::MAX__BALANCE)
     subject.touch_in    
     expect(subject).to be_in_journey
   end
 
   it '#in_journey should be false after touch_out' do
+    subject.top_up(Oystercard::MAX__BALANCE)
     subject.touch_in
     subject.touch_out
     expect(subject).not_to be_in_journey
+  end
+
+  it 'refuses ride when less than minimum balance' do
+    expect { subject.touch_in }.to raise_error('insufficient balance')
   end
 
 end
