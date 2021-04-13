@@ -5,6 +5,7 @@ describe Oystercard do
   let(:max_balance)       { Oystercard::MAX__BALANCE }
   # entry_station = double("station")
   let(:entry_station)     { double :station }
+  let(:exit_station)      { double :station }
 
   it 'is initialised with a balance of 0' do
     expect(subject.balance).to eq 0
@@ -49,26 +50,26 @@ describe Oystercard do
 
   describe '#touch_out' do
     before {subject.top_up(max_balance)}
-    before {subject.touch_in("kingscross")}
+    before {subject.touch_in(:entry_station)}
 
     it '#in_journey should be false after touch_out' do
-      subject.touch_out("shoreditch")
+      subject.touch_out(:exit_station)
       expect(subject).not_to be_in_journey
     end
 
     it 'deducts minimum fare from balance when journey is complete' do
-      expect{subject.touch_out("shoreditch")}.to change{subject.balance}.by(-1)
+      expect{subject.touch_out(:exit_station)}.to change{subject.balance}.by(-1)
     end
 
     it 'deletes the entry station at touch out' do
-      subject.touch_out("shoreditch")
+      subject.touch_out(:exit_station)
       expect(subject.entry_station).to eq(nil)
     end
 
     it 'stores the exit station when touch out' do
   
-      subject.touch_out("shoreditch")
-      expect(subject.exit_station).to eq("shoreditch")
+      subject.touch_out(:exit_station)
+      expect(subject.exit_station).to eq(:exit_station)
     end
 
     it 'tests that journey history is an empty array by default' do
@@ -76,8 +77,8 @@ describe Oystercard do
     end
 
     it 'returns entire journey history when touch out' do
-      subject.touch_out("shoreditch")
-      expect(subject.journey_history).to eq([{"Entry Station"=>"kingscross", "Exit Station"=>"shoreditch"}])
+      subject.touch_out(:exit_station)
+      expect(subject.journey_history).to eq([{"Entry Station"=>:entry_station, "Exit Station"=>:exit_station}])
     end
 
   end
